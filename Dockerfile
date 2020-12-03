@@ -6,6 +6,7 @@ WORKDIR /app
 ENV PATH /app/node_modules/.bin:$PATH
 COPY ./client/package*.json ./
 RUN npm install
+RUN npm update
 COPY ./client .
 RUN npm run build
 
