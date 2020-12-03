@@ -1,3 +1,5 @@
+# we used a multi-stage build.
+# static files in build-vue are copied over to the production and then build-vue is discarded.
 # build
 FROM node:11.12.0-alpine as build-vue
 WORKDIR /app
