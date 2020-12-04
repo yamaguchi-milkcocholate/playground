@@ -44,6 +44,13 @@ def remove_book(book_id):
     return False
 
 
+@app.route('/api/mnist', methods=['POST'])
+def mnist():
+    response_object = {'status': 'success'}
+    response_object['data'] = request.get_json()
+    return jsonify(response_object)
+
+
 # sanity check route
 @app.route('/ping', methods=['GET'])
 def ping_pong():
