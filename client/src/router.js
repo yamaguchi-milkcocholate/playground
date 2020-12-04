@@ -1,7 +1,7 @@
 import Vue from 'vue';
 import Router from 'vue-router';
 import Books from './components/Books.vue';
-import Ping from './components/Ping.vue';
+import Mnist from './components/Mnist.vue';
 
 Vue.use(Router);
 
@@ -15,9 +15,9 @@ export default new Router({
       component: Books,
     },
     {
-      path: '/ping',
-      name: 'Ping',
-      component: Ping,
+      path: '/mnist',
+      name: 'Mnist',
+      component: Mnist,
     },
   ],
 });
