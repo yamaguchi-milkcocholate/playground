@@ -51,9 +51,18 @@ def mnist():
     data = request.get_json()
     img_str, width, height = data['img'], data['width'], data['height']
     img = ParameterParser.to_numpy(img_str)
-    img_pro = ImageProcessor(gray_x=img, width=width, height=height)
+
     dig_cls = DigitClassifier()
-    response_object['prediction'] = dig_cls.predict(x=img_pro.to_gray_scale())
+    img_pro = ImageProcessor(gray_x=img, width=width, height=height)
+
+    response_object['data'] = list()
+    for result in img_pro.divide_to_digit():
+        response_object['data'].append({
+            'prediction': dig_cls.predict(x=result['input']),
+            'img_str': result['raw_digit'],
+            'width': result['width'],
+            'height': result['height'],
+        })
     return jsonify(response_object)
 
 

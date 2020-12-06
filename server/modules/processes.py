@@ -1,3 +1,5 @@
+from __future__ import annotations
+from typing import List, Dict
 import torch
 import torch.nn as nn
 import torchvision
@@ -51,6 +53,7 @@ class DigitClassifier:
 
 
 class ImageProcessor:
+    MARGIN: int = 5
     _img: np.ndarray
 
     def __init__(self, gray_x: np.ndarray, width: int, height: int):
@@ -59,16 +62,56 @@ class ImageProcessor:
         :param width: int
         :param height: int
         """
-        from matplotlib import pyplot as plt
         rgb_x = np.stack([gray_x, gray_x, gray_x], 0).T.reshape((width, height, 3)).astype(np.uint8)
-        print(rgb_x.shape)
         img = cv2.cvtColor(rgb_x, cv2.COLOR_RGB2BGR)
-        img = cv2.resize(img, (DIM, DIM))
         self._img = img
-        cv2.imwrite(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'sample.jpg'), self._img)
+        # cv2.imwrite(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'sample.jpg'), self._img)
 
-    def to_gray_scale(self) -> np.ndarray:
-        return self._img[:, :, 0]
+    def divide_to_digit(self) -> List[Dict[str, int, int, np.ndarray]]:
+        """
+        :return [{
+            raw digit array as string,
+            raw digit's width,
+            raw digit's height,
+            input array to fed into the model
+            }]
+        """
+        data = list()
+        for raw_dig in self._labeling():
+            data.append({
+                'raw_digit': ','.join(list(map(str, raw_dig.flatten()))),
+                'width': raw_dig.shape[0],
+                'height': raw_dig.shape[1],
+                'input': cv2.resize(raw_dig, (DIM, DIM))
+            })
+        return data
+
+    def _labeling(self):
+        _, bin_img = cv2.threshold(self._img, 128, 255, cv2.THRESH_BINARY)
+        _, _, data, _ = cv2.connectedComponentsWithStats(bin_img[:, :, 0])
+
+        img_list = list()
+        for (x, y, w, h, _) in data[1:]:
+            img_i = self._to_square(x=self._img[:, :, 0][y:y+h, x:x+w])
+            img_list.append(img_i)
+            # cv2.imwrite(os.path.join(os.path.dirname(os.path.abspath(__file__)), f'sample_p{w}.jpg'), img_i)
+        return img_list
+
+    def _to_square(self, x: np.ndarray):
+        h, w = x.shape
+        if h > w:
+            square_x = np.zeros((h + self.MARGIN * 2, h + self.MARGIN * 2))
+            margin = (h - w) // 2
+            square_x[self.MARGIN : self.MARGIN + h, self.MARGIN + margin : margin + self.MARGIN + w] = x
+        elif h <= w:
+            square_x = np.zeros((w + self.MARGIN * 2, w + self.MARGIN * 2))
+            margin = (w - h) // 2
+            square_x[self.MARGIN + margin:self.MARGIN + margin + h, self.MARGIN:self.MARGIN + w] = x
+        return square_x.astype(np.uint8)
+
+    @classmethod
+    def _to_gray_scale(self, x: np.ndarray) -> np.ndarray:
+        return x[:, :, 0]
 
 
 class ParameterParser:
@@ -80,8 +123,3 @@ class ParameterParser:
         :return np.ndarray ex) [0, 1, 2, 3]
         """
         return np.array(list(map(int, str_arr.replace('[', '').replace(']', '').split(','))))
-
-
-if __name__ == "__main__":
-    b = np.ones(32 * 32) * 255
-    a = ImageProcessor(b, 32, 32)
