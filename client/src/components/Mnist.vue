@@ -61,7 +61,11 @@ export default {
       axios({
         url: 'http://localhost:5000/api/mnist',
         method: 'post',
-        data: {img: JSON.stringify(img)},
+        data: {
+          img: JSON.stringify(img),
+          width: this.canvas.width,
+          height: this.canvas.height,
+          },
       }).then((res) => {
           console.log(res.data);
         })

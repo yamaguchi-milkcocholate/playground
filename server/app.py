@@ -2,6 +2,7 @@ import uuid
 
 from flask import Flask, jsonify, request
 from flask_cors import CORS
+from modules.processes import *
 
 
 BOOKS = [
@@ -47,7 +48,12 @@ def remove_book(book_id):
 @app.route('/api/mnist', methods=['POST'])
 def mnist():
     response_object = {'status': 'success'}
-    response_object['data'] = request.get_json()
+    data = request.get_json()
+    img_str, width, height = data['img'], data['width'], data['height']
+    img = ParameterParser.to_numpy(img_str)
+    img_pro = ImageProcessor(gray_x=img, width=width, height=height)
+    dig_cls = DigitClassifier()
+    response_object['prediction'] = dig_cls.predict(x=img_pro.to_gray_scale())
     return jsonify(response_object)
 
 
