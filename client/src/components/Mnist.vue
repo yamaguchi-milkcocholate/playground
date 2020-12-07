@@ -42,6 +42,7 @@
           </div>
 
           <div v-for="(digit, index) in this.digits" :key="index">
+            <p>{{digit.prediction}}</p>
             <img role="img" :src="tobase64(digit)">
           </div>
         </div>
@@ -97,7 +98,7 @@ export default {
       })
 
       axios({
-        url: 'http://localhost:5000/api/mnist',
+        url: process.env.VUE_APP_API_ENDPOINT + '/api/mnist',
         method: 'post',
         data: {
           img: JSON.stringify(img),
@@ -105,7 +106,6 @@ export default {
           height: this.canvas.height,
           },
       }).then((res) => {
-          console.log(res.data);
           this.digits = res.data.data;
         })
         .catch((error) => {
@@ -113,7 +113,6 @@ export default {
         });
     },
     tobase64(binaryData) {
-      console.log(binaryData);
       return "data:image/jpg;base64, " + binaryData.img_str;
     },
   },
