@@ -1,7 +1,9 @@
 Flask==1.0.2
 Flask-Cors==3.0.7
-# numpy==1.19.4
-# opencv-python==4.4.0.46
-# Pillow==8.0.1
-# torch==1.7.0
-# torchvision==0.8.1
+gunicorn
+numpy==1.19.4
+opencv-python==4.4.0.46
+Pillow==8.0.1
+torch==1.7.0
+http://download.pytorch.org/whl/cpu/torch-0.4.1-cp36-cp36m-linux_x86_64.whl
+torchvision==0.8.1
