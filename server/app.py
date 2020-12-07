@@ -4,7 +4,7 @@ import sys, os
 from flask import Flask, jsonify, request, render_template
 from flask_cors import CORS
 sys.path.append(os.path.dirname(os.path.join(os.path.abspath(__file__), '../')))
-from src.modules.processes import *
+from server.modules.processes import *
 
 # configuration
 DEBUG = True
@@ -15,6 +15,12 @@ app.config.from_object(__name__)
 
 # enable CORS
 CORS(app, resources={r'/*': {'origins': '*'}})
+
+
+@app.route('/')
+def hello():
+    hello = "Hello world"
+    return hello
 
 
 @app.route('/', methods=['GET'])

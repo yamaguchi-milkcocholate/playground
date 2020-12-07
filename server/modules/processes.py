@@ -13,7 +13,7 @@ from io import BytesIO
 from PIL import Image
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), '../../')))
-from src.modules.network import Net
+from server.modules.network import Net
 
 DIM: int = 28
 
