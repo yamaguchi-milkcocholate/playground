@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% block page_title %}キー判別{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-12">
+            <div class="mt-4">
+                <h4>Left and Right (or Start and End)</h4>
+                <b-card img-left class="mb-3">
+                <b-card-text>
+                    <div class="row">
+                    <div style="width: 300px; height: 300px">
+                        <div id="canvas-area">
+                        <canvas id="myCanvas" width="300" height="300"
+                            @mousedown="dragStart"
+                            @mouseup="dragEnd"
+                            @mouseout="dragEnd"
+                            @mousemove="draw"
+                        ></canvas>
+                        </div>
+                    </div>
+                    <div stype="width: 300px;">
+                        <div>
+                        <b-button
+                            variant="danger"
+                            type="button"
+                            id="clear-button"
+                            class='ml-2'
+                            @click="clear"
+                        >clear</b-button>
+                        <b-button
+                            variant="primary"
+                            type="button"
+                            id="submit-button"
+                            class='ml-2'
+                            @click="submit"
+                        >done</b-button>
+                        </div>
+                    </div>
+                    </div>
+                </b-card-text>
+                </b-card>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
