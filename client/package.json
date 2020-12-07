@@ -4,7 +4,13 @@
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",
+    "serve:dev": "vue-cli-service serve --mode development",
+    "serve:stg": "vue-cli-service serve --mode staging",
+    "serve:prd": "vue-cli-service serve --mode production",
     "build": "vue-cli-service build",
+    "build:dev": "vue-cli-service build --mode development",
+    "build:stg": "vue-cli-service build --mode staging",
+    "build:prd": "vue-cli-service build --mode production",
     "lint": "vue-cli-service lint"
   },
   "dependencies": {
@@ -12,6 +18,7 @@
     "bootstrap": "^4.5.3",
     "bootstrap-vue": "^2.20.1",
     "core-js": "^2.6.5",
+    "dotenv": "^8.2.0",
     "vue": "^2.6.12",
     "vue-router": "^3.0.3"
   },
@@ -23,7 +30,9 @@
     "babel-eslint": "^10.0.1",
     "eslint": "^5.16.0",
     "eslint-plugin-vue": "^5.0.0",
-    "vue-template-compiler": "^2.6.12"
+    "vue-template-compiler": "^2.6.12",
+    "webpack": "4.44.2",
+    "webpack-cli": "3.3.12"
   },
   "eslintConfig": {
     "root": true,
