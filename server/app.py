@@ -3,29 +3,27 @@ import sys, os
 
 from flask import Flask, jsonify, request, render_template
 from flask_cors import CORS
-# sys.path.append(os.path.dirname(os.path.join(os.path.abspath(__file__), '../')))
 from modules.processes import *
 
 # configuration
 DEBUG = True
 
 # instantiate the app
-app = Flask(__name__, template_folder=os.path.abspath('src/templates'))
+app = Flask(
+    __name__,
+    static_folder=os.path.abspath(os.path.join(os.path.dirname(__file__), '../dist/static')),
+    template_folder=os.path.abspath(os.path.join(os.path.dirname(__file__), '../dist')),
+    )
 app.config.from_object(__name__)
 
 # enable CORS
 CORS(app, resources={r'/*': {'origins': '*'}})
 
 
-@app.route('/')
-def hello():
-    hello = "Hello world"
-    return hello
-
-
-@app.route('/', methods=['GET'])
-def top():
-    return render_template('top.html')
+@app.route('/', defaults={'path': ''})
+@app.route('/<path:path>')
+def index(path):
+    return render_template('index.html')
 
 @app.route('/api/mnist', methods=['POST'])
 def mnist():
