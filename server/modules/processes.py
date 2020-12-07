@@ -12,8 +12,8 @@ import base64
 from io import BytesIO
 from PIL import Image
 
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), '../../../')))
-from server.modules.network import Net
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), '../')))
+from modules.network import Net
 
 DIM: int = 28
 
