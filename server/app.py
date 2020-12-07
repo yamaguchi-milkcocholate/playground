@@ -3,7 +3,7 @@ import sys, os
 
 from flask import Flask, jsonify, request, render_template
 from flask_cors import CORS
-sys.path.append(os.path.dirname(os.path.join(os.path.abspath(__file__), '../')))
+sys.path.append(os.path.dirname(os.path.join(os.path.abspath(__file__), '../../')))
 from server.modules.processes import *
 
 # configuration
