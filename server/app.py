@@ -1,9 +1,10 @@
 import uuid
 import sys, os
-
 from flask import Flask, jsonify, request, render_template
 from flask_cors import CORS
-from modules.processes import *
+
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../')))
+from server.modules.processes import *
 
 # configuration
 DEBUG = True
