@@ -68,7 +68,7 @@ class ImageProcessor:
         img = cv2.cvtColor(rgb_x, cv2.COLOR_RGB2BGR)
         self._img = img
 
-    def divide_to_digit(self) -> List[Dict[str, int, int, np.ndarray]]:
+    def divide_to_digit(self) -> List:
         """
         :return [{
             raw digit array as string,
