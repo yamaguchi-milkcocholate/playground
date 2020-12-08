@@ -1,55 +1,45 @@
 <template>
   <div class="about">
-    <div class="container">
-      <div class="row">
-        <div class="col-12">
-          <div>
-            <div class="mt-4">
-              <h4>Left and Right (or Start and End)</h4>
-              <b-card img-left class="mb-3">
-                <b-card-text>
-                  <div class="row">
-                    <div style="width: 300px; height: 300px">
-                      <div id="canvas-area">
-                        <canvas id="myCanvas" width="300" height="300"
-                          @mousedown="dragStart"
-                          @mouseup="dragEnd"
-                          @mouseout="dragEnd"
-                          @mousemove="draw"
-                        ></canvas>
-                      </div>
-                    </div>
-                    <div stype="width: 300px;">
-                      <div>
-                        <b-button
-                          variant="danger"
-                          type="button"
-                          id="clear-button"
-                          class='ml-2'
-                          @click="clear"
-                        >clear</b-button>
-                        <b-button
-                          variant="primary"
-                          type="button"
-                          id="submit-button"
-                          class='ml-2'
-                          @click="submit"
-                        >done</b-button>
-                      </div>
-                    </div>
-                  </div>
-                </b-card-text>
-              </b-card>
-            </div>
-
-            <div v-for="(digit, index) in this.digits" :key="index">
-              <p>{{digit.prediction}}</p>
-              <img role="img" :src="tobase64(digit)">
-            </div>
+    <div class="pad">
+        <div>
+          <div id="canvas-area">
+            <canvas id="myCanvas" width="300" height="300" @mousedown="dragStart" @mouseup="dragEnd" @mouseout="dragEnd" @mousemove="draw"></canvas>
+          </div>
+          <div id="bottun-area" class="m-3">
+            <b-button variant="outline-secondary" type="button" id="clear-button" class='mr-2' @click="clear">clear</b-button>
+            <b-button variant="outline-success" type="button" id="submit-button" class="ml-2" @click="submit">run</b-button>
           </div>
         </div>
       </div>
-  </div>
+      <div id="terminal">
+        <div id="terminal-header">
+          <div class="terminal-tab" v-bind:class="{'terminal-tab-active' : this.activeTerminalTab == 'terminal'}" @click="changeTerminal('terminal')">
+            <p>ターミナル</p>
+          </div>
+          <div class="terminal-tab" v-bind:class="{'terminal-tab-active' : this.activeTerminalTab == 'output'}" @click="changeTerminal('output')">
+            <p>出力</p>
+          </div>
+          <div class="terminal-tab" v-bind:class="{'terminal-tab-active' : this.activeTerminalTab == 'console'}" @click="changeTerminal('console')">
+            <p>デバックコンソール</p>
+          </div>
+        </div>
+        <div id="terminal-body">
+          <div v-show="this.activeTerminalTab == 'terminal'">
+            <div class="d-flex">
+              <div v-for="(digit, index) in this.digits" :key="index" class="mt-3 ml-3">
+                <h3>{{digit.prediction}}</h3>
+                <img role="img" :src="tobase64(digit)">
+              </div>
+            </div>
+          </div>
+          <div v-show="this.activeTerminalTab == 'output'">
+            <p>|</p>
+          </div>
+          <div v-show="this.activeTerminalTab == 'console'">
+            <p>|</p>
+          </div>
+        </div>
+      </div>
   </div>
 </template>
 <script>
@@ -63,6 +53,7 @@ export default {
       context: null,
       isDrag: false,
       digits: [],
+      activeTerminalTab: 'terminal',
     };
   },
   methods: {
@@ -117,6 +108,9 @@ export default {
     tobase64(binaryData) {
       return "data:image/jpg;base64, " + binaryData.img_str;
     },
+    changeTerminal(name) {
+      this.activeTerminalTab = name;
+    }
   },
   mounted() {
     this.canvas = document.querySelector('#myCanvas');
@@ -131,7 +125,57 @@ export default {
 };
 </script>
 <style scoped>
-#myCanvas {
- border: 1px solid #000000;
+#canvas-area {
+  width: 300px;
+  height: 300px;
+  padding: 1px;
+  margin: 1rem auto 0px auto;
+  border: solid 1px rgb(60, 60, 60);
+  box-sizing: content-box;
+}
+
+#button-area {
+  width: 300px;
+}
+
+.about {
+  background: rgb(30, 30, 30);
+  margin-left: 100px;
+}
+
+#terminal {
+  border-top: solid 1px rgb(60, 60, 60);
+}
+
+#terminal-header {
+  width: 100%;
+  display: flex;
+  font-size: 12px;
+}
+
+.terminal-tab {
+  color: rgb(150, 150, 150);
+}
+
+.terminal-tab:hover {
+  color: white;
+  cursor: pointer ;
+}
+
+.terminal-tab-active {
+  color: white;
+}
+
+.terminal-tab p {
+  padding: 10px 0px;
+  margin: 0px 15px;
+}
+
+.terminal-tab-active p {
+  border-bottom: solid 1px white;
+}
+
+.terminal-body {
+  width: 100%;
 }
 </style>
