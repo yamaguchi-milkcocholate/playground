@@ -1,11 +1,8 @@
 <template>
   <div id="app">
-    <div id="side-bar">
-
-    </div>
     <div id="nav">
-        <router-link to="/">Home</router-link>
-        <router-link to="/mnist">MNIST</router-link>
+        <router-link to="/">MNIST</router-link>
+        <!-- <router-link to="/home">Home</router-link> -->
     </div>
     <router-view/>
   </div>
@@ -27,7 +24,6 @@
   /* padding: 30px; */
   background: rgb(51, 51, 51);
   display: flex;
-  margin-left: 100px;
 }
 
 #nav a {
@@ -49,17 +45,5 @@
 
 .tab:hover {
   cursor: pointer;
-}
-
-#side-bar {
-  width: 100px;
-  min-height: 100vh;
-  background: rgb(51, 51, 51);
-  color: white;
-  position: fixed;
-}
-
-#main {
-
 }
 </style>

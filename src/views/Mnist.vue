@@ -1,49 +1,63 @@
 <template>
   <div class="about">
     <div class="pad">
-        <div>
-          <div id="canvas-area">
-            <canvas id="myCanvas" width="300" height="300" @mousedown="dragStart" @mouseup="dragEnd" @mouseout="dragEnd" @mousemove="draw"></canvas>
-          </div>
-          <div id="bottun-area" class="m-3">
-            <b-button variant="outline-secondary" type="button" id="clear-button" class='mr-2' @click="clear">clear</b-button>
-            <b-button variant="outline-success" type="button" id="submit-button" class="ml-2" @click="submit">run</b-button>
-          </div>
+      <div>
+        <div v-if="isSP()" id="canvas-area">
+          <canvas id="myCanvas" width="300" height="300"
+            v-on:touchstart="dragStartSP"
+            v-on:touchend="dragEnd"
+            v-on:touchmove="drawSP"
+          ></canvas>
+        </div>
+        <div v-else id="canvas-area">
+          <canvas id="myCanvas" width="300" height="300"
+            @mousedown="dragStart" @mouseup="dragEnd" @mouseout="dragEnd" @mousemove="draw"
+          ></canvas>
+        </div>
+        <div id="bottun-area" class="m-3">
+          <b-button variant="outline-secondary" type="button" id="clear-button" class='mr-2' @click="clear">clear</b-button>
+          <b-button variant="outline-success" type="button" id="submit-button" class="ml-2" @click="submit">run</b-button>
         </div>
       </div>
-      <div id="terminal">
-        <div id="terminal-header">
-          <div class="terminal-tab" v-bind:class="{'terminal-tab-active' : this.activeTerminalTab == 'terminal'}" @click="changeTerminal('terminal')">
-            <p>ターミナル</p>
-          </div>
-          <div class="terminal-tab" v-bind:class="{'terminal-tab-active' : this.activeTerminalTab == 'output'}" @click="changeTerminal('output')">
-            <p>出力</p>
-          </div>
-          <div class="terminal-tab" v-bind:class="{'terminal-tab-active' : this.activeTerminalTab == 'console'}" @click="changeTerminal('console')">
-            <p>デバックコンソール</p>
-          </div>
+    </div>
+    <div id="terminal">
+      <div id="terminal-header" class="mb-1">
+        <div class="terminal-tab" v-bind:class="{'terminal-tab-active' : this.activeTerminalTab == 'terminal'}" @click="changeTerminal('terminal')"><p>ターミナル</p></div>
+        <div class="terminal-tab" v-bind:class="{'terminal-tab-active' : this.activeTerminalTab == 'output'}" @click="changeTerminal('output')"><p>出力</p></div>
+        <div class="terminal-tab" v-bind:class="{'terminal-tab-active' : this.activeTerminalTab == 'console'}" @click="changeTerminal('console')"><p>デバックコンソール</p></div>
+      </div>
+      <div id="terminal-body">
+        <div class="d-flex" v-if="this.digits.length === 0">
+          <p class="cmd-line"><span class="green">[user0123@machine03]</span> ~/Project/playground</p>
         </div>
-        <div id="terminal-body">
-          <div v-show="this.activeTerminalTab == 'terminal'">
-            <div class="d-flex">
-              <div v-for="(digit, index) in this.digits" :key="index" class="mt-3 ml-3">
-                <h3>{{digit.prediction}}</h3>
-                <img role="img" :src="tobase64(digit)">
-              </div>
+        <div class="d-flex" v-if="this.digits.length === 0">
+          <p class="cmd-line">% {{this.progressBar}}</p>
+        </div>
+        <div v-show="this.activeTerminalTab == 'terminal'">
+          <div class="d-flex">
+            <div v-for="(digit, index) in this.digits" :key="index" class="mt-3 ml-3">
+              <img role="img" :src="tobase64(digit)">
             </div>
           </div>
-          <div v-show="this.activeTerminalTab == 'output'">
-            <p>|</p>
+          <div v-if="this.digits.length !== 0" class="d-flex mt-5 mb-2">
+            <p class="cmd-line"><span class="blue-outer">DONE</span><span class="blue ml-4">Prediction complete. ---> {{this.getPrediction()}}</span></p>
           </div>
-          <div v-show="this.activeTerminalTab == 'console'">
-            <p>|</p>
+          <div class="d-flex" v-if="this.digits.length !== 0">
+            <p class="cmd-line"><span class="green">[user0123@machine03]</span> ~/Project/playground</p>
+          </div>
+          <div class="d-flex" v-if="this.digits.length !== 0">
+            <p class="cmd-line">% </p>
           </div>
         </div>
+        <div v-show="this.activeTerminalTab == 'output'"><p>|</p></div>
+        <div v-show="this.activeTerminalTab == 'console'"><p>|</p></div>
       </div>
+    </div>
   </div>
 </template>
 <script>
 import axios from 'axios';
+import isMobile from 'ismobilejs'
 
 export default {
   name: 'Mnist',
@@ -54,6 +68,7 @@ export default {
       isDrag: false,
       digits: [],
       activeTerminalTab: 'terminal',
+      progressBar: '',
     };
   },
   methods: {
@@ -70,6 +85,19 @@ export default {
       this.context.stroke();
       this.isDrag = true;
     },
+    drawSP(e) {
+      if (!this.isDrag) {
+        return;
+      }
+      this.context.lineTo(e.touches[0].clientX - this.canvas.offsetLeft, e.touches[0].clientY - this.canvas.offsetTop);
+      this.context.stroke();
+    },
+    dragStartSP(e) {
+      this.context.beginPath();
+      this.context.lineTo(e.touches[0].clientX - this.canvas.offsetLeft, e.touches[0].clientY - this.canvas.offsetTop);
+      this.context.stroke();
+      this.isDrag = true;
+    },
     dragEnd() {
       this.context.closePath();
       this.isDrag = false;
@@ -81,15 +109,22 @@ export default {
       this.digits = [];
     },
     submit() {
-      /* eslint-disable */
+      console.log('start')
       const imgData = this.context.getImageData(0, 0, this.canvas.width, this.canvas.height);
       const img = Array();
       imgData.data.forEach((val, idx) => {
         if (idx % 4 == 0) {
           img.push(val);
         }
-      })
-
+      });
+      const progress = () => {
+        console.log('hoge');
+        this.progressBar = this.progressBar + '=';
+        if (this.progressBar.length > 15) {
+          this.progressBar = '';
+        }
+      }
+      const progressId = setInterval(progress, 100);
       axios({
         url: '/api/mnist',
         method: 'post',
@@ -99,10 +134,14 @@ export default {
           height: this.canvas.height,
           },
       }).then((res) => {
-          this.digits = res.data.data;
+        this.digits = res.data.data;
+        clearInterval(progressId);
+        this.progressBar = '';
         })
         .catch((error) => {
           console.error(error);
+          clearInterval(progressId);
+          this.progressBar = '';
         });
     },
     tobase64(binaryData) {
@@ -110,7 +149,17 @@ export default {
     },
     changeTerminal(name) {
       this.activeTerminalTab = name;
-    }
+    },
+    getPrediction() {
+      const pVal = Array();
+      this.digits.forEach((val) => {
+        pVal.push(val.prediction);
+      })
+      return pVal.join('');
+    },
+    isSP() {
+      return isMobile.any;
+    },
   },
   mounted() {
     this.canvas = document.querySelector('#myCanvas');
@@ -138,9 +187,8 @@ export default {
   width: 300px;
 }
 
-.about {
+.pad {
   background: rgb(30, 30, 30);
-  margin-left: 100px;
 }
 
 #terminal {
@@ -177,5 +225,26 @@ export default {
 
 .terminal-body {
   width: 100%;
+}
+
+.cmd-line {
+  color: rgb(200, 200, 200);
+  margin: 0px 0px 0px 15px;
+}
+
+.green {
+  color: rgb(0, 187, 116);
+}
+
+.blue {
+  color: rgb(40, 73, 199);
+}
+
+.blue-outer {
+  background-color: rgb(40, 73, 199);
+  padding: 3px;
+  font-weight: bold;
+  font-size: 12px;
+  color: black;
 }
 </style>
