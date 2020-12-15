@@ -30,3 +30,14 @@ Make sure that your environment contains these packages.
 Run ```python server/app.py``` to activate develop server.
 
 Finally, you can see your web page [your web page: http://127.0.0.1:5000/](http://127.0.0.1:5000/)
+
+
+## Deploy to Heroku
+
+Make sure to download and install the Heroku CLI.
+
+Log in to your Heroku account and deploy it using Git.
+```
+$ heroku login
+$ git push heroku master
+```
